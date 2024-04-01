@@ -36,7 +36,7 @@ export async function run(provider: NetworkProvider, args: string[]) {
 
     console.log(provider.network())
     const ui = provider.ui();
-    const address = Address.parse(checkInContract.testnet);
+    const address = Address.parse(checkInContract[provider.network()]);
     if (!(await provider.isContractDeployed(address))) {
         ui.write(`Error: Contract at address ${address} is not deployed!`);
         return;

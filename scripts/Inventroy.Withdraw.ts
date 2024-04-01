@@ -23,7 +23,7 @@ export async function getSignature(seqno:bigint,ownerAddress:Address,nftIndex:bi
 
 export async function run(provider: NetworkProvider) {
     const owner = provider.sender().address;
-    const inventory = provider.open(Inventory.fromAddress(Address.parse(inventoryContract.testnet)));
+    const inventory = provider.open(Inventory.fromAddress(Address.parse(inventoryContract[provider.network()])));
     const stakingList = await inventory.getGetStakingRecord(owner!)
     if(stakingList === null){
         console.log("No Staking Record for this Address.")

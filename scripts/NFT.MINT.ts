@@ -13,7 +13,7 @@ function getCheckInCell(biz:bigint){
 export async function run(provider: NetworkProvider, args: string[]) {
     const ui = provider.ui();
     console.log(provider.network())
-    const _address = Address.parse(nftCollectionContract.testnet);
+    const _address = Address.parse(nftCollectionContract[provider.network()]);
     if (!(await provider.isContractDeployed(_address))) {
         ui.write(`Error: Contract at address ${_address} is not deployed!`);
         return;

@@ -8,7 +8,7 @@ import {checkInContract} from "../contest/contractConifg";
 // 用Bizz ID 去追踪是否已經簽到
 export async function run(provider: NetworkProvider, args: string[]) {
     const ui = provider.ui();
-    const _address = Address.parse(checkInContract.testnet);
+    const _address = Address.parse(checkInContract[provider.network()]);
     const bizzNumber = await ui.input('Bizz Number')
     if (!(await provider.isContractDeployed(_address))) {
         ui.write(`Error: Contract at address ${_address} is not deployed!`);

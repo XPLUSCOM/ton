@@ -8,7 +8,8 @@ import {checkInContract} from "../contest/contractConifg";
 
 export async function run(provider: NetworkProvider, args: string[]) {
     const ui = provider.ui();
-    const _address = Address.parse(checkInContract.testnet);
+
+    const _address = Address.parse(checkInContract[provider.network()]);
     const walletAddress = await ui.input('Target Wallet')
     if (!(await provider.isContractDeployed(_address))) {
         ui.write(`Error: Contract at address ${_address} is not deployed!`);
