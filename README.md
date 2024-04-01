@@ -1,4 +1,4 @@
-# Checkin
+# XPLUS Ton Contracts
 
 ## Project structure
 
@@ -21,6 +21,65 @@
 
 `npx blueprint run` or `yarn blueprint run`
 
-### Add a new contract
 
-`npx blueprint create ContractName` or `yarn blueprint create ContractName`
+## Check In Contract
+### Depoly
+``` 
+npx blueprint run -> CheckIn.DEPOLY
+```
+### Send Function
+``` 
+# User Check In
+npx blueprint run -> CheckIn.SEND.CheckIn
+```
+
+### Get Function
+``` 
+# Get CheckIn Record By BizId
+npx blueprint run -> CheckIn.GET.Signer 
+
+# Get CheckIn Count By Address
+npx blueprint run -> CheckIn.GET.CheckInCount 
+```
+
+## Inventroy
+### Depoly
+``` 
+npx blueprint run -> Inventroy.DEPOLY
+```
+### Send Function
+``` 
+# Withdraw Nft
+npx blueprint run -> Inventroy.Withdraw
+```
+
+### Get Function
+``` 
+
+```
+
+## Nft Collection
+### Depoly
+- For update Inventroy, plx update the InventoryContract at contest/contractConfig.ts
+- For update the metadata, plx update the metadataUrl at contest/nftCollectionConfig.ts
+``` 
+npx blueprint run -> NFT.DEPOLY
+```
+### Send Function
+``` 
+# Mint
+npx blueprint run -> NFT.MINT
+```
+
+### Get Function
+``` 
+Get Nft Item Address By Index
+npx blueprint run -> NFT.GET.NftAddressByIndex
+```
+
+## Nft Collection
+### Send Function
+``` 
+# Staking
+npx blueprint run -> NFT.Staking
+```

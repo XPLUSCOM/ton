@@ -3,6 +3,7 @@ import {Address, beginCell, toNano} from '@ton/core';
 import {NetworkProvider} from '@ton/blueprint';
 import {NftCollection} from "../wrappers/NFTCollect";
 import {inventoryContract} from "../contest/contractConifg";
+import {nftCollectionConfig} from "../contest/nftCollectionConfig";
 
 
 
@@ -16,7 +17,7 @@ export async function run(provider: NetworkProvider) {
     }
     const owner = provider.sender().address;
     const OFFCHAIN_CONTENT_PREFIX = 0x01;
-    const string_first = "https://s.getgems.io/nft-staging/c/628f6ab8077060a7a8d52d63/"; // Change to the content URL you prepared
+    const string_first = nftCollectionConfig.metadataUrl; // Change to the content URL you prepared
 
     let newContent = beginCell().storeInt(OFFCHAIN_CONTENT_PREFIX, 8).storeStringRefTail(string_first).endCell();
     const nftCollection = provider.open(await NftCollection.fromInit(
