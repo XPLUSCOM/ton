@@ -34,7 +34,7 @@ contract Checkin with Deployable {
         }else{
            self.checkinCount.set(signer,_checkinCount!!+1);
         }
-        self.reply("簽到".asComment());
+        self.reply("Checked-In".asComment());
 
         emit(TransferEvent{singer:signer, bizz:msg.bizz, callTime:now()}.toCell());
     }

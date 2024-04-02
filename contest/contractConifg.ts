@@ -3,7 +3,9 @@ interface IContractAddress{
     testnet:string,
     custom:string
 }
-
+// EQDTu-3hbuyVDXmmllOK3OuN0PT8H3MmwcRQZamUXHaFN3ZF   Checked-In
+// kQA0nvHgqr4Ure2JBtQMfj_a0yffMXacAuybdB_Ce_hDZfw0
+// EQA3leemttuJ7tQAULe0_qKW6mcvReyBzL8PZV0nfNGLa4pr   完成
 export const checkInContract:IContractAddress = {
     mainnet:"EQA3leemttuJ7tQAULe0_qKW6mcvReyBzL8PZV0nfNGLa4pr",
     testnet:"EQA3leemttuJ7tQAULe0_qKW6mcvReyBzL8PZV0nfNGLa4pr",

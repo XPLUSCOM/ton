@@ -23,6 +23,7 @@
 
 
 ## Check In Contract
+![CheckIn_Diagram](doc/checkIn_diagram.png)
 ### Depoly
 ``` 
 npx blueprint run -> CheckIn.DEPOLY
