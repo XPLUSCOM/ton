@@ -36,7 +36,7 @@ contract Checkin with Deployable {
         }
         self.reply("Checked-In".asComment());
 
-        emit(TransferEvent{singer:signer, bizz:msg.bizz, callTime:now()}.toCell());
+        //emit(TransferEvent{singer:signer, bizz:msg.bizz, callTime:now()}.toCell());   // If use Reply Can't emit
     }
 
     get fun checkInCount(_address:Address): Int? {

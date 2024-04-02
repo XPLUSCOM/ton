@@ -7,7 +7,7 @@ interface IContractAddress{
 // kQA0nvHgqr4Ure2JBtQMfj_a0yffMXacAuybdB_Ce_hDZfw0
 // EQA3leemttuJ7tQAULe0_qKW6mcvReyBzL8PZV0nfNGLa4pr   完成
 export const checkInContract:IContractAddress = {
-    mainnet:"EQA3leemttuJ7tQAULe0_qKW6mcvReyBzL8PZV0nfNGLa4pr",
+    mainnet:"EQCctNuvDyHi391daUIldqh80cSLKVKbOrZkOuwv93JZiwjk",
     testnet:"EQA3leemttuJ7tQAULe0_qKW6mcvReyBzL8PZV0nfNGLa4pr",
     custom:""
 }
