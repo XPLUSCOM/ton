@@ -22,3 +22,18 @@ struct StakingRecord {
     nftList: map<Int,Address>;
     curIndexs: Int as uint32;
 }
+
+
+struct NftConfig{
+    phase1TotalSupply:Int;
+    phase1StartDate:Date
+    phase1EndDate:Date
+
+    phase2TotalSupply:Int;
+    phase2StartDate:Date;
+    phase2EndDate:Date;
+
+    phase3TotalSupply:Int;
+    phase3StartDat:Date;
+    phase3EndDate:Date;
+}
