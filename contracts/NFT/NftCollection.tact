@@ -19,33 +19,119 @@ contract NftCollection with Deployable {
     royalty_params: RoyaltyParams?;
     collection_content: Cell;
 
-    init(owner_address: Address,inventory_address: Address, collection_content: Cell, royalty_params: RoyaltyParams){
+    phase1Config:NftPhaseConfig;
+    whiteList: map<Address,Bool>;
+
+    phase2Config:NftPhaseConfig;
+    publicKey : Int as uint256; // Relayer Wallet, for signature verify
+
+    phase3Config:NftPhaseConfig;
+
+
+
+    init(owner_address: Address,inventory_address: Address, collection_content: Cell, royalty_params: RoyaltyParams,publicKey: Int,phase1Config:NftPhaseConfig,phase2Config:NftPhaseConfig,phase3Config:NftPhaseConfig ){
         self.owner_address = owner_address;
         self.collection_content = collection_content;
         self.inventory_address = inventory_address;
         self.royalty_params = royalty_params;
+        self.publicKey = publicKey;
+        self.phase1Config = phase1Config;
+        self.phase2Config = phase2Config;
+        self.phase3Config = phase3Config;
     }
 
-    receive("Mint"){
+    receive("whiteListMint"){
+        //Check Mint Duration
+        require(self.phase1Config.startDate < now() ,"Phase 1 : White List Mint Not Start Yet.");
+        require(self.phase1Config.endDate > now() ,"Phase 1 : White List Mint is Ended.");
+
+        //Check TotalSupply
+        require(
+            self.next_item_index >= 0
+            &&
+            self.next_item_index < self.phase1Config.totalSupply,
+            "Item Index invalid.");
+
+        //Check WhiteList
+        let _eligible:Bool? = self.whiteList.get(sender());
+        require(_eligible != null, "Ineligible, not in WhiteList.");
+        require(_eligible != false,"Already Minted.");
+
+        //Mint
         let ctx: Context = context(); // get sender Info
         let msgValue: Int = ctx.value;
         let tonBalanceBeforeMsg: Int = myBalance() - msgValue;
         let storageFee: Int = minTonsForStorage - min(tonBalanceBeforeMsg, minTonsForStorage);
         msgValue = msgValue - (storageFee + gasConsumption);
-        self.mint(ctx.sender, msgValue);
+        self.mint(ctx.sender, msgValue,self.next_item_index);
+        // Update WhiteList
+        self.whiteList.set(sender(),false);
 
         emit(EventMintRecord{
             minter: sender(),
             item_id: self.next_item_index,
             generate_number: nativeRandom()
         }.toCell());
+    }
 
+    receive(msg:XPlusMintParams){
+        //Check Mint Duration
+        require(self.phase2Config.startDate < now() ,"Phase 1 : White List Mint Not Start Yet.");
+        require(self.phase2Config.endDate > now() ,"Phase 1 : White List Mint is Ended.");
+
+        //Check TotalSupply
+        require(msg.item_index < (self.phase1Config.totalSupply+self.phase2Config.totalSupply),"Item Index invalid.");
+
+        //Check Signature
+        let hash: Int = beginCell()
+            .storeAddress(msg.ownerAddress)
+            .storeUint(msg.item_index,32)
+        .endCell()
+        .hash();
+        require(checkSignature(hash, msg.signature, self.publicKey), "Invalid Signature.");
+
+
+
+        //Mint
+        let ctx: Context = context(); // get sender Info
+        let msgValue: Int = ctx.value;
+        let tonBalanceBeforeMsg: Int = myBalance() - msgValue;
+        let storageFee: Int = minTonsForStorage - min(tonBalanceBeforeMsg, minTonsForStorage);
+        msgValue = msgValue - (storageFee + gasConsumption);
+        self.mint(ctx.sender, msgValue,msg.item_index);
+
+        emit(EventMintRecord{
+            minter: sender(),
+            item_id: self.next_item_index,
+            generate_number: nativeRandom()
+        }.toCell());
+    }
+
+    receive("PublicMint"){
+        //Check Mint Duration
+        require(self.phase3Config.startDate < now() ,"Phase 3 : Public List Mint Not Start Yet.");
+        require(self.phase3Config.endDate > now() ,"Phase 3 : Public Mint is Ended.");
+
+        //Check TotalSupply
+        require(self.next_item_index < (self.phase1Config.totalSupply+self.phase2Config.totalSupply+self.phase3Config.totalSupply),"Item Index invalid.");
+
+        let ctx: Context = context(); // get sender Info
+        let msgValue: Int = ctx.value;
+        let tonBalanceBeforeMsg: Int = myBalance() - msgValue;
+        let storageFee: Int = minTonsForStorage - min(tonBalanceBeforeMsg, minTonsForStorage);
+        msgValue = msgValue - (storageFee + gasConsumption);
+        self.mint(ctx.sender, msgValue,self.next_item_index);
+        emit(EventMintRecord{
+            minter: sender(),
+            item_id: self.next_item_index,
+            generate_number: nativeRandom()
+        }.toCell());
     }
 
     // ===== Private Methods ===== //
-    fun mint(sender: Address, msgValue: Int) {
-        require(self.next_item_index >= 0, "non-sequential NFTs");
-        let nft_init: StateInit = self.getNftItemInit(self.next_item_index);
+    fun mint(sender: Address, msgValue: Int,item_index:Int) {
+        require(item_index >= 0, "non-sequential NFTs");
+        let nft_init: StateInit = self.getNftItemInit(item_index);
         send(SendParameters{
                 to: contractAddress(nft_init),
                 value: msgValue,
@@ -54,7 +140,7 @@ contract NftCollection with Deployable {
                 body: Transfer {
                     query_id: 0,
                     new_owner: sender,
-                    response_destination: sender,
+                    response_destination: self.owner_address,   // Fund Wallet
                     custom_payload: self.collection_content,
                     forward_amount: 0,
                     forward_payload: emptySlice()
@@ -62,9 +148,14 @@ contract NftCollection with Deployable {
                 code: nft_init.code,
                 data: nft_init.data
             });
-        // dump(self.next_item_index);
-        self.next_item_index = self.next_item_index + 1;
+
+        if(item_index+1> self.next_item_index){
+            //Prevent Phase2 Wrong Item_index
+            self.next_item_index = item_index+1;
+        }
     }
+
+
 
     receive(msg: GetRoyaltyParams) {
         let ctx: Context = context(); // get sender Info
@@ -89,10 +180,11 @@ contract NftCollection with Deployable {
         b.append(collectionDataString);
         b.append("meta.json"); // You can changed this your self.
         return CollectionData{
-            next_item_index: self.next_item_index,
-            collection_content: b.toCell(),
-            owner_address: self.owner_address
-        };
+             next_item_index: self.next_item_index,
+             collection_content: b.toCell(),
+             owner_address: self.owner_address
+         };
+
     }
 
     get fun get_nft_address_by_index(item_index: Int): Address?{

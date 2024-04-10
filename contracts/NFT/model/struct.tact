@@ -24,16 +24,9 @@ struct StakingRecord {
 }
 
 
-struct NftConfig{
-    phase1TotalSupply:Int;
-    phase1StartDate:Date
-    phase1EndDate:Date
-
-    phase2TotalSupply:Int;
-    phase2StartDate:Date;
-    phase2EndDate:Date;
-
-    phase3TotalSupply:Int;
-    phase3StartDat:Date;
-    phase3EndDate:Date;
+struct NftPhaseConfig{
+    totalSupply:Int;
+    startDate:Int as uint32;
+    endDate:Int as uint32;
+    startIndex:Int?;
 }

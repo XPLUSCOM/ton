@@ -45,3 +45,9 @@ message WithdrawParams{
     ownerAddress:Address; // Nft'Owner Wallet address
     nftIndex: Int as uint32;
 }
+
+message XPlusMintParams{
+    signature: Slice as bytes64;
+    ownerAddress:Address;
+    item_index:Int as uint32;
+}
