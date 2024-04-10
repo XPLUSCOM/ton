@@ -18,7 +18,7 @@ contract NftCollection with Deployable {
     inventory_address: Address;
     royalty_params: RoyaltyParams?;
     collection_content: Cell;
-
+    deployer: Address;
     phase1Config:NftPhaseConfig;
     whiteList: map<Address,Bool>;
 
@@ -29,7 +29,7 @@ contract NftCollection with Deployable {
 
 
 
-    init(owner_address: Address,inventory_address: Address, collection_content: Cell, royalty_params: RoyaltyParams,publicKey: Int,phase1Config:NftPhaseConfig,phase2Config:NftPhaseConfig,phase3Config:NftPhaseConfig ){
+    init(owner_address: Address,inventory_address: Address, collection_content: Cell, royalty_params: RoyaltyParams,publicKey: Int,phase1Config:NftPhaseConfig,phase2Config:NftPhaseConfig,phase3Config:NftPhaseConfig,whiteList: map<Address,Bool> ){
         self.owner_address = owner_address;
         self.collection_content = collection_content;
         self.inventory_address = inventory_address;
@@ -38,6 +38,8 @@ contract NftCollection with Deployable {
         self.phase1Config = phase1Config;
         self.phase2Config = phase2Config;
         self.phase3Config = phase3Config;
+        self.whiteList = whiteList;
+        self.deployer = sender();
     }
 
     receive("WhiteListMint"){
@@ -172,6 +174,27 @@ contract NftCollection with Deployable {
             }.toCell()
         });
     }
+    // ------------------ Admin Function  ------------------ //
+    //Update WhiteList
+    receive(msg: UpdateWhiteListParams) {
+        require(self.deployer == sender(),"Only Deployer.");
+        self.whiteList = msg.newList;
+    }
+
+    //Update Mint Config
+    receive(msg: UpdatePhaseConfigParams) {
+        require(self.deployer == sender(),"Only Deployer.");
+        if(msg.targetPhase == 1){
+            self.phase1Config = msg.newConfig;
+        }
+        if(msg.targetPhase == 2){
+            self.phase2Config = msg.newConfig;
+        }
+
+        if(msg.targetPhase == 3){
+            self.phase3Config = msg.newConfig;
+        }
+    }
 
     // ------------------ Get Function  ------------------ //
     get fun get_collection_data(): CollectionData {
@@ -209,6 +232,16 @@ contract NftCollection with Deployable {
 
     get fun now(): Int {
         return now();
+    }
+
+    get fun isWhiteList(address:Address):Bool{
+        let _eligible:Bool? = self.whiteList.get(address);
+
+        if(_eligible==null){
+            return false;
+        }else{
+            return _eligible!!;
+        }
     }
 
     get fun mintingStatus():MintingStatus?{

@@ -1,5 +1,5 @@
 import {Blockchain, SandboxContract, TreasuryContract} from '@ton/sandbox';
-import {Address, address, beginCell, toNano} from '@ton/core';
+import {Address, address, beginCell, Dictionary, toNano} from '@ton/core';
 
 import '@ton/test-utils';
 import _, {now} from "lodash";
@@ -30,7 +30,7 @@ describe('Checkin', () => {
         inventory = blockchain.openContract(await Inventory.fromInit(pbKey));
 
         const phase1Start = new Date()
-        // phase1Start.setHours(phase1Start.getHours())
+        phase1Start.setHours(phase1Start.getHours()-1)
         const phase1End = new Date()
         phase1End.setHours(phase1End.getHours()+1)
         const phase2Start = new Date()
@@ -61,6 +61,9 @@ describe('Checkin', () => {
         });
         const OFFCHAIN_CONTENT_PREFIX = 0x01;
         const string_first = "https://s.getgems.io/nft-staging/c/628f6ab8077060a7a8d52d63/"; // Change to the content URL you prepared
+        // White List
+        const whiteList : Dictionary<Address,boolean>=  Dictionary.empty<Address, boolean>();
+        whiteList.set(userA.address,true)
 
         let newContent = beginCell().storeInt(OFFCHAIN_CONTENT_PREFIX, 8).storeStringRefTail(string_first).endCell();
 
@@ -95,7 +98,8 @@ describe('Checkin', () => {
                 startDate:convertDateFromTs(phase3Start),
                 endDate:convertDateFromTs(phase3End),
                 startIndex:null
-            }
+            },
+            whiteList
 
             ),
 
@@ -124,10 +128,14 @@ describe('Checkin', () => {
         console.log({
             name:details?.currentPhase,
             startDate: convertDateFromContract(details!.startDate),
-            endDate: convertDateFromContract(details!.endDate)
+            endDate: convertDateFromContract(details!.endDate),
+            now:convertDateFromContract(details!.now)
         })
 
 
+        const isWhiteList = await nftCollection.getIsWhiteList(userA.address)
+
+        console.log({isWhiteList})
         let userResult = await nftCollection.send(
             userA.getSender(),
             {

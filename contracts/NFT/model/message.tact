@@ -51,3 +51,12 @@ message XPlusMintParams{
     ownerAddress:Address;
     item_index:Int as uint32;
 }
+
+message UpdateWhiteListParams{
+    newList: map<Address,Bool>;
+}
+
+message UpdatePhaseConfigParams{
+    newConfig: NftPhaseConfig;
+    targetPhase: Int as uint32;
+}
