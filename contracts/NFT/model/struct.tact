@@ -30,3 +30,14 @@ struct NftPhaseConfig{
     endDate:Int as uint32;
     startIndex:Int?;
 }
+
+struct MintingStatus{
+        currentPhase:String;
+        totalSupply:Int;
+        startDate:Int as uint32;
+        endDate:Int as uint32;
+        now:Int as uint32;
+        startIndex:Int?;
+        itemsRemain:Int as uint32;
+        next_item_index:Int as uint32;
+}

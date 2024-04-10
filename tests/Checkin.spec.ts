@@ -52,14 +52,14 @@ describe('Checkin', () => {
             }
         );
 
-        console.log({
-            signer: increaser.getSender().address,
-            checkinCount: await checkin.getCheckInCount(increaser.getSender().address),
-            bizz: {
-                value: bizz,
-                signer: await checkin.getGetBizzSigner(bizz)
-            }
-        })
+        // console.log({
+        //     signer: increaser.getSender().address,
+        //     checkinCount: await checkin.getCheckInCount(increaser.getSender().address),
+        //     bizz: {
+        //         value: bizz,
+        //         signer: await checkin.getGetBizzSigner(bizz)
+        //     }
+        // })
 
         //Check-in Second time
         bizz = BigInt(_.random(1, 999999999999))
@@ -73,14 +73,14 @@ describe('Checkin', () => {
                 bizz: bizz
             }
         );
-        console.log({
-            signer: increaser.getSender().address,
-            checkinCount: await checkin.getCheckInCount(increaser.getSender().address),
-            bizz: {
-                value: bizz,
-                signer: await checkin.getGetBizzSigner(bizz)
-            }
-        })
+        // console.log({
+        //     signer: increaser.getSender().address,
+        //     checkinCount: await checkin.getCheckInCount(increaser.getSender().address),
+        //     bizz: {
+        //         value: bizz,
+        //         signer: await checkin.getGetBizzSigner(bizz)
+        //     }
+        // })
 
         //Check-in Third time ( Use Existed Bizz)
         const tx = await checkin.send(
@@ -93,13 +93,13 @@ describe('Checkin', () => {
                 bizz: bizz
             }
         );
-        console.log({
-            signer: increaser.getSender().address,
-            checkinCount: await checkin.getCheckInCount(increaser.getSender().address),
-            bizz: {
-                value: bizz,
-                signer: await checkin.getGetBizzSigner(bizz)
-            }
-        })
+        // console.log({
+        //     signer: increaser.getSender().address,
+        //     checkinCount: await checkin.getCheckInCount(increaser.getSender().address),
+        //     bizz: {
+        //         value: bizz,
+        //         signer: await checkin.getGetBizzSigner(bizz)
+        //     }
+        // })
     });
 });

@@ -2,12 +2,14 @@ import {Blockchain, SandboxContract, TreasuryContract} from '@ton/sandbox';
 import {Address, address, beginCell, toNano} from '@ton/core';
 
 import '@ton/test-utils';
-import _ from "lodash";
+import _, {now} from "lodash";
 import {Inventory} from "../wrappers/Inventroy";
 import {getRelayerPublicKey} from "../scripts/Inventroy.DEPOLY";
 import {NftCollection} from "../wrappers/NFTCollect";
 import {NftItem} from "../wrappers/NFTItem";
 import {getSignature, IStakingTable} from "../scripts/Inventroy.Withdraw";
+import {convertDateFromContract, convertDateFromTs} from "../scripts/util/dateTimeTools";
+
 
 describe('Checkin', () => {
     let blockchain: Blockchain;
@@ -26,6 +28,19 @@ describe('Checkin', () => {
         userA = await blockchain.treasury('userA');
         userB = await blockchain.treasury('userB');
         inventory = blockchain.openContract(await Inventory.fromInit(pbKey));
+
+        const phase1Start = new Date()
+        // phase1Start.setHours(phase1Start.getHours())
+        const phase1End = new Date()
+        phase1End.setHours(phase1End.getHours()+1)
+        const phase2Start = new Date()
+        phase2Start.setHours(phase2Start.getHours()+2)
+        const phase2End = new Date()
+        phase2End.setHours(phase2End.getHours()+3)
+        const phase3Start = new Date()
+        phase3Start.setHours(phase3Start.getHours()+4)
+        const phase3End = new Date()
+        phase3End.setHours(phase3End.getHours()+5)
 
         let deployResult = await inventory.send(
             deployer.getSender(),
@@ -49,16 +64,41 @@ describe('Checkin', () => {
 
         let newContent = beginCell().storeInt(OFFCHAIN_CONTENT_PREFIX, 8).storeStringRefTail(string_first).endCell();
 
-        nftCollection = blockchain.openContract(await NftCollection.fromInit( deployer.address,
-            inventory.address
-            ,
+        nftCollection = blockchain.openContract(await NftCollection.fromInit(
+            deployer.address,
+            inventory.address,
             newContent,
             {
                 $$type: "RoyaltyParams",
                 numerator: 350n, // 350n = 35%
                 denominator: 1000n,
                 destination: deployer.address,
-            })
+            },
+            pbKey,
+            {
+                $$type:"NftPhaseConfig",
+                totalSupply:BigInt(1),
+                startDate:convertDateFromTs(phase1Start),
+                endDate:convertDateFromTs(phase1End),
+                startIndex:null
+            },
+            {
+                $$type:"NftPhaseConfig",
+                totalSupply:BigInt(1),
+                startDate:convertDateFromTs(phase2Start),
+                endDate:convertDateFromTs(phase2End),
+                startIndex:null
+            },
+            {
+                $$type:"NftPhaseConfig",
+                totalSupply:BigInt(1),
+                startDate:convertDateFromTs(phase3Start),
+                endDate:convertDateFromTs(phase3End),
+                startIndex:null
+            }
+
+            ),
+
         )
 
         deployResult = await nftCollection.send(
@@ -78,12 +118,22 @@ describe('Checkin', () => {
             success: true,
         });
 
+        let details = await nftCollection.getMintingStatus()
+
+        // console.log(details)
+        console.log({
+            name:details?.currentPhase,
+            startDate: convertDateFromContract(details!.startDate),
+            endDate: convertDateFromContract(details!.endDate)
+        })
+
+
         let userResult = await nftCollection.send(
             userA.getSender(),
             {
                 value: toNano('0.15'),
             },
-            "Mint"
+            "WhiteListMint"
         )
 
         const lastIndex = await nftCollection.getGetCollectionData()
@@ -92,7 +142,10 @@ describe('Checkin', () => {
         nftItem = blockchain.openContract(NftItem.fromAddress(lastNftAddress!))
         const nftData = await nftItem.getGetNftData()
         expect(nftData.owner_address).toEqualAddress(userA.address)
+
+
     });
+
 
     it('Staking', async () => {
         // const nftContract  =

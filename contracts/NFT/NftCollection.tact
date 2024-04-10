@@ -40,7 +40,7 @@ contract NftCollection with Deployable {
         self.phase3Config = phase3Config;
     }
 
-    receive("whiteListMint"){
+    receive("WhiteListMint"){
         //Check Mint Duration
         require(self.phase1Config.startDate < now() ,"Phase 1 : White List Mint Not Start Yet.");
         require(self.phase1Config.endDate > now() ,"Phase 1 : White List Mint is Ended.");
@@ -205,5 +205,59 @@ contract NftCollection with Deployable {
 
     get fun royalty_params(): RoyaltyParams {
         return self.royalty_params!!;
+    }
+
+    get fun now(): Int {
+        return now();
+    }
+
+    get fun mintingStatus():MintingStatus?{
+        if(now()<self.phase2Config.startDate){
+        //Phase 1
+            return MintingStatus{
+                    currentPhase:"Phase1-WhiteListMint",
+                    totalSupply:self.phase1Config.totalSupply,
+                    startDate:self.phase1Config.startDate,
+                    endDate: self.phase1Config.endDate,
+                    startIndex:self.phase1Config.startIndex,
+                    now:now(),
+                    itemsRemain: self.phase1Config.totalSupply - self.next_item_index - 1,
+                    next_item_index:self.next_item_index
+            };
+        }else if(now()<self.phase3Config.startDate && now()>self.phase1Config.endDate){
+          let _startIndex:Int = self.next_item_index;
+           if(self.phase2Config.startIndex != null){
+            _startIndex = (self.phase2Config.startIndex!!);
+           }
+
+        //Phase 2
+          return MintingStatus{
+                            currentPhase:"Phase2-XPlusMint",
+                            totalSupply:self.phase2Config.totalSupply,
+                            startDate:self.phase2Config.startDate,
+                            endDate:self.phase2Config.endDate,
+                            startIndex:_startIndex,
+                             now:now(),
+                            itemsRemain: self.phase2Config.totalSupply - (self.next_item_index-_startIndex) - 1,
+                            next_item_index:self.next_item_index
+            };
+        }else if(now()>self.phase2Config.endDate){
+            //Phase 3
+           let _startIndex:Int = self.next_item_index;
+           if(self.phase3Config.startIndex != null){
+                _startIndex = (self.phase3Config.startIndex!!);
+           }
+            return MintingStatus{
+                            currentPhase:"Phase3-PublicMint",
+                            totalSupply:self.phase3Config.totalSupply,
+                            startDate:self.phase3Config.startDate,
+                            endDate:self.phase3Config.endDate,
+                            startIndex:_startIndex,
+                            now:now(),
+                            itemsRemain: self.phase3Config.totalSupply - (self.next_item_index-_startIndex) - 1,
+                            next_item_index:self.next_item_index
+                    };
+        }
+        return null;
     }
 }
