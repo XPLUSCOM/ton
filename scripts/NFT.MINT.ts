@@ -23,16 +23,16 @@ export async function run(provider: NetworkProvider, args: string[]) {
     const nftCollection = provider.open(NftCollection.fromAddress(_address));
     const collectionDataBefore = await nftCollection.getGetCollectionData()
 
-    await nftCollection.send(
-        provider.sender(),
-        {
-            value: toNano('0.15'),
-        },
-        "Mint"
-    )
-
-    if (await waitSeqNoChange(provider, provider.sender().address!, seqno)) {
-       console.log("Msg Sent.")
-    }
+    // await nftCollection.send(
+    //     provider.sender(),
+    //     {
+    //         value: toNano('0.15'),
+    //     },
+    //     "Mint"
+    // )
+    //
+    // if (await waitSeqNoChange(provider, provider.sender().address!, seqno)) {
+    //    console.log("Msg Sent.")
+    // }
     ui.clearActionPrompt();
 }

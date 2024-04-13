@@ -7,8 +7,9 @@ import {Inventory} from "../wrappers/Inventroy";
 import {getRelayerPublicKey} from "../scripts/Inventroy.DEPOLY";
 import {NftCollection} from "../wrappers/NFTCollect";
 import {NftItem} from "../wrappers/NFTItem";
-import {getSignature, IStakingTable} from "../scripts/Inventroy.Withdraw";
+import {getSignature_Inventroy, IStakingTable} from "../scripts/Inventroy.Withdraw";
 import {convertDateFromContract, convertDateFromTs} from "../scripts/util/dateTimeTools";
+import {relayer} from "../contest/demoWallet";
 
 
 describe('Checkin', () => {
@@ -22,7 +23,7 @@ describe('Checkin', () => {
 
     beforeEach(async () => {
         blockchain = await Blockchain.create();
-        const pbKey = await getRelayerPublicKey()
+        const pbKey = await getRelayerPublicKey(relayer.mnemonics.split(' '))
 
         deployer = await blockchain.treasury('deployer');
         userA = await blockchain.treasury('userA');
@@ -198,7 +199,7 @@ describe('Checkin', () => {
 
         const seqno = await inventory.getGetSeqno()
         const nftIndex = BigInt(0)
-        const _signature = await getSignature(seqno,userA.address!,nftIndex)
+        const _signature = await getSignature_Inventroy(seqno,userA.address!,nftIndex)
         await inventory.send(
             userA.getSender(),
             {
@@ -232,7 +233,7 @@ describe('Checkin', () => {
 
         const seqno = BigInt(2)
         const nftIndex = BigInt(0)
-        const _signature = await getSignature(seqno,userA.address!,nftIndex)
+        const _signature = await getSignature_Inventroy(seqno,userA.address!,nftIndex)
         await inventory.send(
             userA.getSender(),
             {

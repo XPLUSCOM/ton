@@ -10,8 +10,8 @@ export interface IStakingTable{
     [key:number]:string
 }
 
-export async function getSignature(seqno:bigint,ownerAddress:Address,nftIndex:bigint):Promise<Buffer>{
-    let par = await mnemonicToWalletKey(relayer.mnemonics)
+export async function getSignature_Inventroy(seqno:bigint,ownerAddress:Address,nftIndex:bigint):Promise<Buffer>{
+    let par = await mnemonicToWalletKey(relayer.mnemonics.split(' '))
     let secretKey = par.secretKey
     let hash = beginCell()
         .storeUint(seqno,32)
@@ -40,7 +40,7 @@ export async function run(provider: NetworkProvider) {
     const input_nftIndex = await provider.ui().input('nftIndex')
     const seqno = BigInt(0)
     const nftIndex = BigInt(+input_nftIndex)
-    const _signature = await getSignature(seqno,owner!,nftIndex)
+    const _signature = await getSignature_Inventroy(seqno,owner!,nftIndex)
     await inventory.send(
         provider.sender(),
         {

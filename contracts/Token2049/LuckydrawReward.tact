@@ -1,3 +1,4 @@
+import "@stdlib/deploy";
 struct ClaimRecord{
     amount:Int;
     receiver:Address;
@@ -5,16 +6,20 @@ struct ClaimRecord{
 }
 
 message ClaimParams{
-    seqno: Int as uint32;
-    amount:Int as uint32;;
+    signature:Slice as bytes64;
+    bizId: Int as uint32;
+    amount:Int as uint32;
     receiver:Address;
-    signature: Address;
+}
+
+message TopupEvent {
+    amount: Int as coins;
 }
 
 contract LuckyDrawReward with Deployable {
     const MinTonForStorage: Int = ton("0.01"); // enough for 1 KB of storage for 2.5 years
-    seqno:Int as uint32 = 0;
-    claimRecord: map<Int,ClaimRecord>; // seqno -> ClaimRecord
+    bizId:Int as uint32 = 0;
+    claimRecord: map<Int,ClaimRecord>; // bizId -> ClaimRecord
     publicKey : Int as uint256; // Relayer Wallet, for signature verify
     fundWallet: Address;
 
@@ -24,22 +29,37 @@ contract LuckyDrawReward with Deployable {
     }
 
     receive() {
-        dump("Funds received");
+        let ctx: Context = context(); // get sender Info
+        let msgValue: Int = ctx.value;
+        emit(TopupEvent{amount: msgValue}.toCell());
     }
 
     receive(msg: ClaimParams){
         require((myBalance()-self.MinTonForStorage) > msg.amount , "Contract Balance Not Enough.");
+
+         // Approval Control ( Signature Base)
         let hash: Int = beginCell()
-            .storeUint(msg.seqno,32)
+            .storeUint(msg.bizId,32)
             .storeUint(msg.amount,32)
             .storeAddress(msg.receiver)
-        .endCell()
-        .hash();
+        .endCell().hash();
+
         require(checkSignature(hash, msg.signature, self.publicKey), "Invalid Signature.");
+
+        let claimRecord:ClaimRecord? = self.claimRecord.get(msg.bizId);
+        require(claimRecord==null,"BizId Already Used."); //Prevent Replay Attack.
+        require(sender()==msg.receiver,"Sender Not Receiver.");
+        let amount: Int = min(msg.amount, myBalance() - context().value - self.MinTonForStorage);
+        self.claimRecord.set(msg.bizId,ClaimRecord{
+            amount:amount,
+            receiver:msg.receiver,
+            signature: msg.signature
+        });
+
         send(SendParameters{
-            to: msg.receiver,
+            to: sender(),
             bounce: true,
-            value: msg.amount,
+            value: amount,
             mode: SendRemainingValue + SendIgnoreErrors
         });
     }
@@ -69,4 +89,13 @@ contract LuckyDrawReward with Deployable {
     get fun balance(): String {
         return myBalance().toCoinsString();
     }
+
+    get fun publicKey():Int{
+        return self.publicKey;
+    }
+
+    get fun queryBizId(bizId:Int): ClaimRecord? {
+        return self.claimRecord.get(bizId);
+    }
+
 }

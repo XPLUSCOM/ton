@@ -5,8 +5,8 @@ import {Inventory} from "../wrappers/Inventroy";
 import {mnemonicToWalletKey} from "@ton/crypto";
 import {relayer} from "../contest/demoWallet";
 
-export async function getRelayerPublicKey():Promise<bigint>{
-    let par = await mnemonicToWalletKey(relayer.mnemonics)
+export async function getRelayerPublicKey(mnemonics:string[]):Promise<bigint>{
+    let par = await mnemonicToWalletKey(mnemonics)
     return BigInt(`0x${par.publicKey.toString("hex")}`)
 }
 
@@ -14,7 +14,8 @@ export async function getRelayerPublicKey():Promise<bigint>{
 export async function run(provider: NetworkProvider) {
 
     const owner = provider.sender().address;
-    const publicKey = await getRelayerPublicKey()
+    const publicKey = await getRelayerPublicKey(relayer.mnemonics.split(' '))
+    console.log(publicKey)
     const inventory = provider.open(await Inventory.fromInit(publicKey));
     console.log(provider.network())
     await inventory.send(
