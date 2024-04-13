@@ -25,7 +25,7 @@ export const nftCollectionContract:IContractAddress = {
 }
 
 export const luckyDrawRewardContract:IContractAddress = {
-    mainnet:"TO-BE-DEPOLY",
+    mainnet:"EQCN0ttSHJDyNrIqxpImMDmAy__gAyNWiD5GjDWCDwTZPUEF",
     testnet:"EQAW98-ODa1_lFmjwsTHuD48Ou26SHs0Xwti2cIly-k55gNp",
     custom:""
 }

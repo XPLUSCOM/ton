@@ -12,7 +12,7 @@ export async function getSignature_LuckyDrawReward(bizId:bigint,amount:bigint,re
     // amount:Int as uint32;
     // receiver:Address;
 
-    let par = await mnemonicToWalletKey(fake_relayer.mnemonics.split(' '))
+    let par = await mnemonicToWalletKey(relayer.mnemonics.split(' '))
     console.log({
         signature_signer_public_key: BigInt(`0x${par.publicKey.toString("hex")}`)
     })
@@ -21,7 +21,7 @@ export async function getSignature_LuckyDrawReward(bizId:bigint,amount:bigint,re
         .storeUint(bizId,32)
         .storeUint(amount,32)
         .storeAddress(receiver)
-        .endCell().hash();
+        .endCell().hash()
     const signature = sign(hash,secretKey)
     return signature
 }
@@ -45,7 +45,7 @@ export async function run(provider: NetworkProvider) {
     await luckyDrawReward.send(
         provider.sender(),
         {
-            value: toNano('0.2'),
+            value: toNano('0.1'),
         },
         {
             $$type: "ClaimParams",

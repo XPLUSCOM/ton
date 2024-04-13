@@ -1,5 +1,5 @@
 import {NetworkProvider} from "@ton/blueprint";
-import {relayer} from "../contest/demoWallet";
+import {fund_wallet, relayer} from "../contest/demoWallet";
 import {Inventory} from "../build/Inventory/tact_Inventory";
 import {Address, toNano} from "@ton/core";
 import {getRelayerPublicKey} from "./Inventroy.DEPOLY";
@@ -10,7 +10,7 @@ export async function run(provider: NetworkProvider) {
     const owner = provider.sender().address;
     const publicKey = await getRelayerPublicKey(relayer.mnemonics.split(' '))
     console.log(publicKey)
-    const fundWalletAddress =  Address.parse("UQBH4FYWOdAhdYzkzzfHOVScH7tmnlKdcGBNAGg1ToT7nO_-")
+    const fundWalletAddress =  Address.parse(fund_wallet.address)
     const luckyDrawClaimContract = provider.open(await LuckyDrawReward.fromInit(
         publicKey,
         fundWalletAddress

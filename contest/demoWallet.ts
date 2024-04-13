@@ -14,3 +14,9 @@ export const fake_relayer:IWallet={
     mnemonics:'indoor expose denial review occur live kitten family bright twin differ say modify pig expose ladder embark tray nature forget tank enter kiwi expose',
     address:'UQCFUHR1STYjLvNw4loBUVFOTP3nbyWLTWgEsPVYQQU3sbJ1'
 }
+
+
+export const fund_wallet:IWallet={
+    mnemonics:'',
+    address:"UQBSp0w2X_aehGcDtgeOljhvx4aH7QNzfSTTq-R4Bns6uMsH"
+}

@@ -13,7 +13,7 @@ export async function run(provider: NetworkProvider) {
     await luckyDrawReward.send(
         provider.sender(),
         {
-            value: toNano('0.2'),
+            value: toNano('0.1'),
         },
         "withdraw all"
     );
