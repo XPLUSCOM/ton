@@ -66,7 +66,7 @@ contract LuckyDrawReward with Deployable {
 
     // this will withdraw the entire balance of the contract and leave 0
     receive("withdraw all") {
-        require(sender() == self.fundWallet, "Only deployer is allowed to withdraw");
+        require(sender() == self.fundWallet, "Only fundWallet is allowed to withdraw");
         send(SendParameters{
             to: sender(),
             bounce: true,
@@ -77,7 +77,7 @@ contract LuckyDrawReward with Deployable {
 
     // this will withdraw the entire balance but leave 0.01 for storage rent costs
     receive("withdraw safe") {
-        require(sender() == self.fundWallet, "Only deployer is allowed to withdraw");
+        require(sender() == self.fundWallet, "Only fundWallet is allowed to withdraw");
         send(SendParameters{
             to: sender(),
             bounce: true,
