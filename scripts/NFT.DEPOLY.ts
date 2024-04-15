@@ -21,11 +21,10 @@ export async function run(provider: NetworkProvider) {
     const OFFCHAIN_CONTENT_PREFIX = 0x01;
     const string_first = nftCollectionConfig.metadataUrl; // Change to the content URL you prepared
 
-    const phase1Start = new Date()
-    const phase1End = new Date()
-    phase1End.setMinutes(phase1End.getMinutes()+10)
-    const phase2End = new Date()
-    phase2End.setMinutes(phase2End.getMinutes()+20)
+    const phase1Start = new Date("2024-04-16T10:00:00Z")
+    const phase1End = new Date("2024-04-16T11:00:00Z")
+    const phase2Start = new Date("2024-04-16T11:00:00Z")
+    const phase2End = new Date("2024-04-16T12:00:00Z")
 
     let newContent = beginCell().storeInt(OFFCHAIN_CONTENT_PREFIX, 8).storeStringRefTail(string_first).endCell();
     const nftCollection = provider.open(await NftCollection.fromInit(
@@ -42,16 +41,16 @@ export async function run(provider: NetworkProvider) {
             $$type:"NftPhaseConfig",
             startDate:convertDateFromTs(phase1Start),
             endDate:convertDateFromTs(phase1End),
-            price:toNano(0.5),
+            price:toNano(4.5),
         },
         {
             $$type:"NftPhaseConfig",
-            startDate:convertDateFromTs(phase1End),
+            startDate:convertDateFromTs(phase2Start),
             endDate:convertDateFromTs(phase2End),
-            price:toNano(1),
+            price:toNano(6),
         },
         convertMapToWhiteList(),
-        BigInt(3)
+        BigInt(2000)
     ));
 
     await nftCollection.send(

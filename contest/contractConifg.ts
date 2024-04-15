@@ -20,7 +20,7 @@ export const inventoryContract:IContractAddress = {
 
 export const nftCollectionContract:IContractAddress = {
     mainnet:"TO-BE-DEPOLY",
-    testnet:"EQCvHNmQ82altMG_Lx6T2uy2YgNUrv3OfILrKSs74qbzwFGz",
+    testnet:"EQDgozuMPN33D_MsUn7GD6FANiJr2a6uRdyCaZ00if3pLi1G",
     custom:""
 }
 

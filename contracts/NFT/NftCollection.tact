@@ -256,5 +256,12 @@ contract NftCollection with Deployable {
         }
     }
 
-
+    get fun getPhaseConfig():AllPhaseConfig{
+        return AllPhaseConfig{
+            phase1:self.phase1Config,
+            phase2:self.phase2Config,
+            totalSupply:self.total_supply,
+            now:now()
+        };
+    }
 }

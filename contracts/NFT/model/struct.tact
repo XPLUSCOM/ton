@@ -27,7 +27,7 @@ struct StakingRecord {
 struct NftPhaseConfig{
     startDate:Int as uint32;
     endDate:Int as uint32;
-    price:Int as uint32;
+    price:Int;
 }
 
 struct MintingStatus{
@@ -37,5 +37,12 @@ struct MintingStatus{
     endDate:Int as uint32;
     now:Int as uint32;
     mintedCount:Int as uint32;
-    price:Int as uint32;
+    price:Int;
+}
+
+struct AllPhaseConfig{
+    phase1:NftPhaseConfig;
+    phase2:NftPhaseConfig;
+    totalSupply:Int;
+    now:Int as uint32;
 }
