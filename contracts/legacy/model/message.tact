@@ -53,7 +53,7 @@ message XPlusMintParams{
 }
 
 message UpdateWhiteListParams{
-    newList: map<Address,Int>;
+    newList: map<Address,Bool>;
 }
 
 message UpdatePhaseConfigParams{
