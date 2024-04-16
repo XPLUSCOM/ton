@@ -261,7 +261,8 @@ contract NftCollection with Deployable {
             phase1:self.phase1Config,
             phase2:self.phase2Config,
             totalSupply:self.total_supply,
-            now:now()
+            now:now(),
+            mintedCount:self.next_item_index
         };
     }
 }

@@ -45,4 +45,5 @@ struct AllPhaseConfig{
     phase2:NftPhaseConfig;
     totalSupply:Int;
     now:Int as uint32;
+    mintedCount:Int as uint32;
 }
